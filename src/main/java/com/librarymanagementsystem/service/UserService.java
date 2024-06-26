@@ -27,15 +27,14 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-            return userRepository.findById(user.getId())
-                    .map(existingUser -> {
-                        existingUser.setName(user.getName());
-                        existingUser.setEmail(user.getEmail());
-                        existingUser.setRole(user.getRole());
-                        return userRepository.save(existingUser);
-                    })
-                    .orElse(null);
-
+        return userRepository.findById(user.getId())
+                .map(existingUser -> {
+                    existingUser.setName(user.getName());
+                    existingUser.setEmail(user.getEmail());
+                    existingUser.setRole(user.getRole());
+                    return userRepository.save(existingUser);
+                })
+                .orElse(null);
     }
 
 
