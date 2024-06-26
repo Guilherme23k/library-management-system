@@ -92,22 +92,23 @@ class UserServiceTest {
     @Test
     public void testUpdateUser() {
         User userOld = Instancio.of(User.class)
+                .set(Select.field(User::getId), 1L) // Define o ID para 1L
                 .set(Select.field(User::getName), "Guilherme")
                 .set(Select.field(User::getEmail), "guilherme@gmail.com")
                 .set(Select.field(User::getRole), "Cliente")
                 .create();
 
         User userNew = Instancio.of(User.class)
+                .set(Select.field(User::getId), 1L) // Define o ID para 1L
                 .set(Select.field(User::getName), "Guilherme ATT")
                 .set(Select.field(User::getEmail), "guilhermenovo@gmail.com")
                 .set(Select.field(User::getRole), "Cliente")
                 .create();
 
-
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(userOld));
         Mockito.when(userRepository.save(userOld)).thenReturn(userNew);
 
-        User result = userService.updateUser(1L, userNew);
+        User result = userService.updateUser(userNew);
 
         Assertions.assertNotNull(result, "Updated user cannot be null");
         Assertions.assertEquals("Guilherme ATT", result.getName(), "Incorrect updated username");
