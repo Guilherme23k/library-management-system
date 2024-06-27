@@ -25,4 +25,22 @@ public class BookService {
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
+
+    public boolean deleteById(Long id) {
+        return bookRepository.findById(id)
+                .map(book -> {
+                    bookRepository.deleteById(id);
+                    return true;
+                }).orElse(false);
+    }
+
+    public Book updateBook(Book book) {
+        return bookRepository.findById(book.getId())
+                .map(existingBook ->{
+                    existingBook.setAuthor(book.getAuthor());
+                    existingBook.setIsbn(book.getIsbn());
+                    existingBook.setTitle(book.getTitle());
+                    return bookRepository.save(existingBook);
+                }).orElse(null);
+    }
 }
