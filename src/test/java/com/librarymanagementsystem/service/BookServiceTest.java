@@ -84,4 +84,48 @@ class BookServiceTest {
         Assertions.assertEquals(expectedBook, actualBooks);
     }
 
+    @Test
+    public void testUpdateUser(){
+
+        Book bookOld = Instancio.of(Book.class)
+                .set(Select.field(Book::getId), 1L)
+                .set(Select.field(Book::getAuthor), "Guilherme")
+                .set(Select.field(Book::getTitle), "Livro")
+                .set(Select.field(Book::getIsbn), "1111111111")
+                .create();
+
+        Book bookNew = Instancio.of(Book.class)
+                .set(Select.field(Book::getId), 1L)
+                .set(Select.field(Book::getAuthor), "GuilhermeDois")
+                .set(Select.field(Book::getTitle), "LivroDois")
+                .set(Select.field(Book::getIsbn), "1111111112")
+                .create();
+
+        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(bookOld));
+        Mockito.when(bookRepository.save(bookOld)).thenReturn(bookNew);
+
+        Book result = bookService.updateBook(bookNew);
+
+        Assertions.assertNotNull(result, "Updated user cannot be null");
+        Assertions.assertEquals("LivroDois", result.getTitle(), "Incorrect updated title");
+        Assertions.assertEquals("1111111112", result.getIsbn(), "Incorrect updated book isbn");
+        Assertions.assertEquals("GuilhermeDois", result.getAuthor(), "Incorrect updated book author");
+
+
+    }
+
+    @Test
+    public void testDeleteBook(){
+        Book book = Instancio.create(Book.class);
+
+        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        Mockito.doNothing().when(bookRepository).deleteById(1L);
+
+        boolean isDeleted = bookService.deleteById(1L);
+
+        Assertions.assertTrue(isDeleted, "Book should have be deleted");
+        Mockito.verify(bookRepository, Mockito.times(1)).deleteById(1L);
+
+    }
+
 }

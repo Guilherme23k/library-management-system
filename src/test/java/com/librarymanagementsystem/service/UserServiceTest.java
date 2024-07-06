@@ -92,7 +92,7 @@ class UserServiceTest {
     @Test
     public void testUpdateUser() {
         User userOld = Instancio.of(User.class)
-                .set(Select.field(User::getId), 1L) // Define o ID para 1L
+                .set(Select.field(User::getId), 1L)
                 .set(Select.field(User::getName), "Guilherme")
                 .set(Select.field(User::getEmail), "guilherme@gmail.com")
                 .set(Select.field(User::getRole), "Cliente")

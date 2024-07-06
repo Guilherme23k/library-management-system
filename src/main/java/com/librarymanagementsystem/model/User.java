@@ -1,5 +1,6 @@
 package com.librarymanagementsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +25,8 @@ public class User {
     private String role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Loan> loans = new ArrayList<>();
+    @JsonManagedReference
+    private List<Loan> loans;
 
     public Long getId() {
         return id;

@@ -1,5 +1,7 @@
 package com.librarymanagementsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +23,7 @@ public class Loan {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     @ManyToMany
@@ -32,6 +35,14 @@ public class Loan {
 
     private LocalDate loanDate;
     private LocalDate returnDate;
+
+    @PrePersist
+    @PreUpdate
+    private void updateBookAvailability(){
+        for (Book book: books){
+            book.setAvailable(false);
+        }
+    }
 
     public Long getId() {
         return id;
