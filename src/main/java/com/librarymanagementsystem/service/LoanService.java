@@ -1,7 +1,10 @@
 package com.librarymanagementsystem.service;
 
+import com.librarymanagementsystem.dto.LoanDTO;
 import com.librarymanagementsystem.model.Loan;
+import com.librarymanagementsystem.repository.BookRepository;
 import com.librarymanagementsystem.repository.LoanRepository;
+import com.librarymanagementsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +17,19 @@ public class LoanService {
     @Autowired
     private LoanRepository loanRepository;
 
-    public Loan createLoan(Loan loan){
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    public Loan createLoan(LoanDTO loanDTO) {
+        Loan loan = new Loan();
+        loan.setUser(userRepository.findById(loanDTO.getUserId()).orElse(null));
+        loan.setBooks(bookRepository.findAllById(loanDTO.getBookIds()));
+        loan.setLoanDate(loanDTO.getLoanDate());
+        loan.setReturnDate(loanDTO.getReturnDate());
+
         return loanRepository.save(loan);
     }
 
@@ -30,8 +45,8 @@ public class LoanService {
                 }).orElse(null);
     }
 
-    public Optional<Loan> getLoanById(Long id){
-        return loanRepository.findById(id);
+    public Loan getLoanById(Long id) {
+        return loanRepository.findById(id).orElse(null);
     }
 
     public List<Loan> getAllLoans(){

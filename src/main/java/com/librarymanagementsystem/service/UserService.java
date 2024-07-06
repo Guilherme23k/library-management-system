@@ -18,8 +18,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public User getUserById(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        user.getLoans().forEach(loan ->
+                loan.getBooks().forEach(book -> book.setAvailable(false))
+        );
+
+        return user;
     }
 
     public List<User> getAllUsers(){

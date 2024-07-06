@@ -1,13 +1,15 @@
 package com.librarymanagementsystem.controller;
 
+import com.librarymanagementsystem.dto.LoanDTO;
 import com.librarymanagementsystem.model.Loan;
 import com.librarymanagementsystem.service.LoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.librarymanagementsystem.model.Book;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController()
 @RequestMapping("/api/loans")
@@ -17,9 +19,10 @@ public class LoanController {
     private LoanService loanService;
 
     @PostMapping
-    public ResponseEntity<Loan> createLoan(@RequestBody Loan loan){
-        Loan loanCreated = loanService.createLoan(loan);
-        return ResponseEntity.ok(loanCreated);
+    public ResponseEntity<LoanDTO> createLoan(@RequestBody LoanDTO loanDTO) {
+        Loan createdLoan = loanService.createLoan(loanDTO);
+        LoanDTO respondeDTO = mapToDTO(createdLoan);
+        return ResponseEntity.ok(respondeDTO);
     }
 
     @PutMapping("/{id}")
@@ -33,26 +36,40 @@ public class LoanController {
 
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Loan> getLoanById(@PathVariable Long id){
-        Optional<Loan> loan = loanService.getLoanById(id);
-        if (loan.isPresent()){
-            return ResponseEntity.ok(loan.get());
-        }
-        else {
+    public ResponseEntity<LoanDTO> getLoanById(@PathVariable Long id) {
+        Loan loan = loanService.getLoanById(id);
+        if (loan == null) {
             return ResponseEntity.notFound().build();
         }
+        LoanDTO loanDTO = mapToDTO(loan);
+        return ResponseEntity.ok(loanDTO);
     }
-
-    @GetMapping()
-    public ResponseEntity<List<Loan>> getAllLoans(){
+    @GetMapping
+    public ResponseEntity<List<LoanDTO>> getAllLoans() {
         List<Loan> loans = loanService.getAllLoans();
-        return ResponseEntity.ok(loans);
+        List<LoanDTO> loanDTOs = loans.stream().map(this::mapToDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(loanDTOs);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Loan> deteleLoan(@PathVariable Long id){
         loanService.deleteLoan(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private LoanDTO mapToDTO(Loan loan) {
+        LoanDTO loanDTO = new LoanDTO();
+        loanDTO.setId(loan.getId());
+        loanDTO.setUserId(loan.getUser().getId());
+
+        List<Long> bookIds = loan.getBooks().stream()
+                .map(Book::getId)
+                .collect(Collectors.toList());
+
+        loanDTO.setBookIds(bookIds);
+        loanDTO.setLoanDate(loan.getLoanDate());
+        loanDTO.setReturnDate(loan.getReturnDate());
+        return loanDTO;
     }
 
 
