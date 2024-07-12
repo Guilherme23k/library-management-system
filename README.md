@@ -10,7 +10,6 @@ Este é um projeto de um sistema de gerenciamento de biblioteca desenvolvido em 
 - PostgreSQL
 - Docker
 - Docker Compose
-- Thymeleaf (futuro)
 
 ## ✨ Funcionalidades
 
